@@ -1,9 +1,10 @@
 package main
 
 import (
+	"context"
 	"embed"
 
-	"input-stats/app"
+	App "input-stats/app"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -13,19 +14,28 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:embed build/windows/icon.ico
+var trayIcon []byte
+
 func main() {
 	// Create an instance of the app structure
-	app := app.NewApp()
+	app := App.NewApp()
+	trayStartFunc, _ := App.CreateTray(app, trayIcon)
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "Input Stats",
-		Width:  1024,
-		Height: 768,
+		Title:     "Input Stats",
+		Width:     648,
+		Height:    768,
+		MinWidth:  648,
+		MinHeight: 768,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		OnStartup: app.Startup,
+		OnStartup: func(ctx context.Context) {
+			app.Ctx = ctx
+			trayStartFunc()
+		},
 		Bind: []interface{}{
 			app,
 		},
