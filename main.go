@@ -36,6 +36,7 @@ func main() {
 			app.Ctx = ctx
 			trayStartFunc()
 		},
+		OnBeforeClose: app.OnBeforeClose,
 		Bind: []interface{}{
 			app,
 		},

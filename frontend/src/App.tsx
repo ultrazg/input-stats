@@ -1,10 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from './app.module.scss'
 import { Typography } from '@mui/joy'
 import { Kbd } from '@/components'
 import { Footer } from '@/components'
+import { EventsOn, ExitApp } from '@/utils'
 
-function App() {
+const App = () => {
+  useEffect(() => {
+    const exitApp = EventsOn('onMenuItemClick:ExitApp', () => {
+      ExitApp().catch()
+    })
+
+    return () => {
+      exitApp()
+    }
+  }, [])
+
   return (
     <React.Fragment>
       <div className={styles['app-wrapper']}>

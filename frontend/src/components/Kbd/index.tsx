@@ -5,6 +5,8 @@ type IProps = {
   value: string
 }
 
-export default function Kbd({ value }: IProps) {
+const Kbd = ({ value }: IProps) => {
   return <div className={styles['kbd-wrapper']}>{value}</div>
 }
+
+export default Kbd

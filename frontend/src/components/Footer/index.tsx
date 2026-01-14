@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './index.module.scss'
 import { Button } from '@mui/joy'
 
-export default function Footer() {
+const Footer = () => {
   return (
     <div className={styles['footer-wrapper']}>
       <Button
@@ -15,3 +15,5 @@ export default function Footer() {
     </div>
   )
 }
+
+export default Footer

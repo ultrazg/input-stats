@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/energye/systray"
@@ -26,7 +27,38 @@ func CreateTray(a *App, icon []byte) (start, end func()) {
 }
 
 func (a *App) ExitApp() {
-	systray.Quit()
-	runtime.Quit(a.Ctx)
-	os.Exit(0)
+	if !a.OnBeforeClose(a.Ctx) {
+		systray.Quit()
+		runtime.Quit(a.Ctx)
+		os.Exit(0)
+	}
+}
+
+func createMenuItem(a *App, menu MenuItem) {
+	switch menu.Type {
+	case "item":
+		var m *systray.MenuItem
+		m = systray.AddMenuItem(menu.Title, menu.Tooltip)
+		m.Click(func() {
+			fmt.Printf("%s", menu.Event)
+			go runtime.EventsEmit(a.Ctx, menu.Event)
+		})
+
+		if menu.Disabled {
+			m.Disable()
+		}
+	case "separator":
+		systray.AddSeparator()
+	}
+}
+
+func updateTrayMenus(a *App, menus []MenuItem) {
+	systray.ResetMenu()
+	for _, menu := range menus {
+		createMenuItem(a, menu)
+	}
+}
+
+func (a *App) UpdateTrayMenus(menus []MenuItem) {
+	updateTrayMenus(a, menus)
 }
