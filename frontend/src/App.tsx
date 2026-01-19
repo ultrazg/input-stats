@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './app.module.scss'
 import { Typography } from '@mui/joy'
 import { Kbd, Footer, Segmented, Chart } from '@/components'
-import { EventsOn, ExitApp } from '@/utils'
+import { EventsOn, ExitApp, GetInputStats } from '@/utils'
+import { StatsSnapshot } from '@/types'
 
 const options = {
   chart: {
@@ -24,13 +25,30 @@ const options = {
 }
 
 const App = () => {
+  const [inputStatsInfo, setInputStatsInfo] = useState<StatsSnapshot>({
+    comboStats: {},
+    keyStats: {},
+    modifierStats: {},
+    mouseLeftClick: 0,
+    mouseRightClick: 0,
+    mouseMovePixels: 0,
+    mouseWheel: 0,
+  })
+
   useEffect(() => {
     const exitApp = EventsOn('onMenuItemClick:ExitApp', () => {
       ExitApp().catch()
     })
 
+    const timer = setInterval(() => {
+      GetInputStats().then((res: StatsSnapshot) => {
+        setInputStatsInfo(res)
+      })
+    }, 5000)
+
     return () => {
       exitApp()
+      clearInterval(timer)
     }
   }, [])
 
@@ -48,21 +66,29 @@ const App = () => {
           <div className={styles['overview-item']}>
             <div className={styles['overview-chunk']}>
               <span className={styles['overview-label']}>🖱左键点击</span>
-              <span className={styles['overview-value']}>1</span>
+              <span className={styles['overview-value']}>
+                {inputStatsInfo.mouseLeftClick}
+              </span>
             </div>
             <div className={styles['overview-chunk']}>
               <span className={styles['overview-label']}>🖱右键点击</span>
-              <span className={styles['overview-value']}>1</span>
+              <span className={styles['overview-value']}>
+                {inputStatsInfo.mouseRightClick}
+              </span>
             </div>
           </div>
           <div className={styles['overview-item']}>
             <div className={styles['overview-chunk']}>
               <span className={styles['overview-label']}>↔️鼠标移动</span>
-              <span className={styles['overview-value']}>1</span>
+              <span className={styles['overview-value']}>
+                {inputStatsInfo.mouseMovePixels}
+              </span>
             </div>
             <div className={styles['overview-chunk']}>
               <span className={styles['overview-label']}>↕️滚动距离</span>
-              <span className={styles['overview-value']}>1</span>
+              <span className={styles['overview-value']}>
+                {inputStatsInfo.mouseWheel}
+              </span>
             </div>
           </div>
         </div>

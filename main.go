@@ -34,6 +34,7 @@ func main() {
 		OnStartup: func(ctx context.Context) {
 			app.Ctx = ctx
 			trayStartFunc()
+			App.ListenStats()
 		},
 		OnBeforeClose: app.OnBeforeClose,
 		Bind: []interface{}{
